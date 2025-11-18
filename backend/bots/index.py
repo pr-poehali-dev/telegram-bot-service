@@ -56,7 +56,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute('SELECT * FROM bots WHERE user_id = %s ORDER BY created_at DESC', (user_id,))
+        query = f'SELECT * FROM bots WHERE user_id = {user_id} ORDER BY created_at DESC'
+        cursor.execute(query)
         bots = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -90,12 +91,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        # Escape strings for simple query
+        name_escaped = name.replace("'", "''")
+        token_escaped = telegram_token.replace("'", "''")
+        template_escaped = template.replace("'", "''")
+        
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute(
-            '''INSERT INTO bots (user_id, name, telegram_token, template, status)
-               VALUES (%s, %s, %s, %s, %s) RETURNING *''',
-            (user_id, name, telegram_token, template, 'inactive')
-        )
+        query = f'''INSERT INTO bots (user_id, name, telegram_token, template, status)
+               VALUES ({user_id}, '{name_escaped}', '{token_escaped}', '{template_escaped}', 'inactive') RETURNING *'''
+        cursor.execute(query)
         bot = cursor.fetchone()
         conn.commit()
         cursor.close()
@@ -130,13 +134,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        updates = []
-        params = []
-        if status:
-            updates.append('status = %s')
-            params.append(status)
-        
-        if not updates:
+        if not status:
             conn.close()
             return {
                 'statusCode': 400,
@@ -148,9 +146,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        params.append(bot_id)
-        query = f"UPDATE bots SET {', '.join(updates)}, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *"
-        cursor.execute(query, params)
+        status_escaped = status.replace("'", "''")
+        query = f"UPDATE bots SET status = '{status_escaped}', updated_at = CURRENT_TIMESTAMP WHERE id = {bot_id} RETURNING *"
+        cursor.execute(query)
         bot = cursor.fetchone()
         conn.commit()
         cursor.close()

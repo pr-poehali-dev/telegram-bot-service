@@ -60,19 +60,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        # Escape strings for simple query
+        username_escaped = username.replace("'", "''")
+        first_name_escaped = first_name.replace("'", "''")
+        last_name_escaped = last_name.replace("'", "''")
+        photo_url_escaped = photo_url.replace("'", "''")
+        
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute(
-            '''INSERT INTO users (telegram_id, username, first_name, last_name, photo_url)
-               VALUES (%s, %s, %s, %s, %s)
+        query = f'''INSERT INTO users (telegram_id, username, first_name, last_name, photo_url)
+               VALUES ({telegram_id}, '{username_escaped}', '{first_name_escaped}', '{last_name_escaped}', '{photo_url_escaped}')
                ON CONFLICT (telegram_id) DO UPDATE
                SET username = EXCLUDED.username,
                    first_name = EXCLUDED.first_name,
                    last_name = EXCLUDED.last_name,
                    photo_url = EXCLUDED.photo_url,
                    updated_at = CURRENT_TIMESTAMP
-               RETURNING *''',
-            (telegram_id, username, first_name, last_name, photo_url)
-        )
+               RETURNING *'''
+        cursor.execute(query)
         user = cursor.fetchone()
         conn.commit()
         cursor.close()
@@ -104,7 +108,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute('SELECT * FROM users WHERE telegram_id = %s', (telegram_id,))
+        query = f'SELECT * FROM users WHERE telegram_id = {telegram_id}'
+        cursor.execute(query)
         user = cursor.fetchone()
         cursor.close()
         conn.close()
