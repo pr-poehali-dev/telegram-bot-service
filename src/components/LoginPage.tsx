@@ -26,7 +26,7 @@ const LoginPage = ({ onAuth }: LoginPageProps) => {
             </p>
             <div className="flex justify-center">
               <TelegramLoginButton
-                botName="YOUR_BOT_NAME"
+                botName="generickeytest"
                 onAuth={onAuth}
               />
             </div>
