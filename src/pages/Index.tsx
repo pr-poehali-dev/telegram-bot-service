@@ -41,10 +41,22 @@ const Index = () => {
   useEffect(() => {
     const checkTelegramWebApp = () => {
       const tg = (window as any).Telegram?.WebApp;
-      if (tg) {
+      if (tg && tg.initDataUnsafe?.user) {
         setIsTelegramApp(true);
         tg.ready();
         tg.expand();
+        
+        const tgUser = tg.initDataUnsafe.user;
+        const telegramUser = {
+          id: tgUser.id,
+          first_name: tgUser.first_name || '',
+          last_name: tgUser.last_name || '',
+          username: tgUser.username || '',
+          photo_url: tgUser.photo_url || ''
+        };
+        
+        handleTelegramAuth(telegramUser);
+        return;
       }
     };
     

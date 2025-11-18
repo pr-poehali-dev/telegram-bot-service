@@ -93,15 +93,15 @@ const LoginPage = ({ onAuth, error }: LoginPageProps) => {
               </div>
             ) : (
               <div className="space-y-3">
-                <Button
-                  className="w-full gradient-blue border-0 text-white"
-                  onClick={() => window.open('https://t.me/generickeytest_bot?start=login', '_blank')}
-                >
-                  <Icon name="Send" size={20} className="mr-2" />
-                  Войти через Telegram
-                </Button>
+                <div className="p-4 rounded-lg bg-muted/30 space-y-2">
+                  <p className="text-sm font-medium">Для входа:</p>
+                  <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                    <li>Откройте @generickeytest_bot в Telegram</li>
+                    <li>Нажмите кнопку "Открыть приложение" в меню бота</li>
+                  </ol>
+                </div>
                 <div className="text-xs text-center text-muted-foreground">
-                  или
+                  или для разработки
                 </div>
                 <Button 
                   variant="outline" 
@@ -113,11 +113,6 @@ const LoginPage = ({ onAuth, error }: LoginPageProps) => {
                 </Button>
               </div>
             )}
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>💡 Если кнопка не появилась:</p>
-              <p>• Проверьте, что домен настроен в @BotFather</p>
-              <p>• Попробуйте обновить страницу</p>
-            </div>
           </div>
         </div>
       </Card>
