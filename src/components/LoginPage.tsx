@@ -35,11 +35,29 @@ const LoginPage = ({ onAuth, error }: LoginPageProps) => {
             <p className="text-sm text-muted-foreground">
               Войдите через Telegram, чтобы начать
             </p>
-            <div className="flex justify-center">
-              <TelegramLoginButton
-                botName="generickeytest"
-                onAuth={onAuth}
-              />
+            {error && (
+              <Alert variant="destructive" className="text-left">
+                <Icon name="AlertCircle" size={16} className="inline mr-2" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-4">
+                <Icon name="Loader2" size={24} className="animate-spin text-primary" />
+                <span className="ml-2 text-sm text-muted-foreground">Авторизация...</span>
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                <TelegramLoginButton
+                  botName="generickeytest"
+                  onAuth={handleAuth}
+                />
+              </div>
+            )}
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p>💡 Если кнопка не появилась:</p>
+              <p>• Проверьте, что домен настроен в @BotFather</p>
+              <p>• Попробуйте обновить страницу</p>
             </div>
           </div>
         </div>
