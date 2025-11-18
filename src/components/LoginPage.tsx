@@ -6,7 +6,18 @@ interface LoginPageProps {
   onAuth: (user: any) => void;
 }
 
-const LoginPage = ({ onAuth }: LoginPageProps) => {
+const LoginPage = ({ onAuth, error }: LoginPageProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAuth = async (user: any) => {
+    setIsLoading(true);
+    try {
+      await onAuth(user);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <Card className="max-w-md w-full p-8 glass-card animate-scale-in">
