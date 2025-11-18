@@ -7,9 +7,7 @@ interface TelegramLoginButtonProps {
 
 declare global {
   interface Window {
-    TelegramLoginWidget?: {
-      dataOnauth?: (user: any) => void;
-    };
+    onTelegramAuth?: (user: any) => void;
   }
 }
 
@@ -19,10 +17,10 @@ const TelegramLoginButton = ({ botName, onAuth }: TelegramLoginButtonProps) => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    window.TelegramLoginWidget = {
-      dataOnauth: (user: any) => {
-        onAuth(user);
-      },
+    // Создаем глобальную функцию для callback
+    window.onTelegramAuth = (user: any) => {
+      console.log('Telegram auth callback received:', user);
+      onAuth(user);
     };
 
     const script = document.createElement('script');
@@ -30,7 +28,7 @@ const TelegramLoginButton = ({ botName, onAuth }: TelegramLoginButtonProps) => {
     script.setAttribute('data-telegram-login', botName);
     script.setAttribute('data-size', 'large');
     script.setAttribute('data-radius', '12');
-    script.setAttribute('data-onauth', 'TelegramLoginWidget.dataOnauth(user)');
+    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
     script.setAttribute('data-request-access', 'write');
     script.async = true;
 
@@ -40,6 +38,8 @@ const TelegramLoginButton = ({ botName, onAuth }: TelegramLoginButtonProps) => {
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
       }
+      // Очищаем глобальную функцию
+      delete window.onTelegramAuth;
     };
   }, [botName, onAuth]);
 
