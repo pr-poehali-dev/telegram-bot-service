@@ -93,11 +93,15 @@ const LoginPage = ({ onAuth, error }: LoginPageProps) => {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="flex justify-center">
-                  <TelegramLoginButton
-                    botName="generickeytest"
-                    onAuth={handleAuth}
-                  />
+                <Button
+                  className="w-full gradient-blue border-0 text-white"
+                  onClick={() => window.open('https://t.me/generickeytest_bot?start=login', '_blank')}
+                >
+                  <Icon name="Send" size={20} className="mr-2" />
+                  Войти через Telegram
+                </Button>
+                <div className="text-xs text-center text-muted-foreground">
+                  или
                 </div>
                 <Button 
                   variant="outline" 
@@ -105,7 +109,7 @@ const LoginPage = ({ onAuth, error }: LoginPageProps) => {
                   className="w-full"
                   onClick={() => setShowDevForm(true)}
                 >
-                  Тестовый вход (разработка)
+                  Тестовый вход (ID)
                 </Button>
               </div>
             )}
