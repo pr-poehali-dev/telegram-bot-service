@@ -35,9 +35,21 @@ const Index = () => {
   const [newBotToken, setNewBotToken] = useState('');
   const [isCreatingBot, setIsCreatingBot] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isTelegramApp, setIsTelegramApp] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    const checkTelegramWebApp = () => {
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg) {
+        setIsTelegramApp(true);
+        tg.ready();
+        tg.expand();
+      }
+    };
+    
+    checkTelegramWebApp();
+    
     const savedUser = localStorage.getItem('telegram_user');
     if (savedUser) {
       const user = JSON.parse(savedUser);
@@ -213,10 +225,12 @@ const Index = () => {
                 </div>
                 <span className="text-sm font-medium">{currentUser?.first_name}</span>
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <Icon name="LogOut" size={16} className="mr-2" />
-                Выход
-              </Button>
+              {!isTelegramApp && (
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  <Icon name="LogOut" size={16} className="mr-2" />
+                  Выход
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -225,7 +239,7 @@ const Index = () => {
       <div className="pt-24 pb-12">
         <div className="container mx-auto px-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 h-12">
+            <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 h-12">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <Icon name="LayoutDashboard" size={16} />
                 Дашборд
@@ -233,10 +247,6 @@ const Index = () => {
               <TabsTrigger value="bots" className="flex items-center gap-2">
                 <Icon name="Bot" size={16} />
                 Мои боты
-              </TabsTrigger>
-              <TabsTrigger value="admin" className="flex items-center gap-2">
-                <Icon name="Shield" size={16} />
-                Админ-панель
               </TabsTrigger>
             </TabsList>
 
@@ -258,13 +268,6 @@ const Index = () => {
                 setNewBotToken={setNewBotToken}
                 handleCreateBot={handleCreateBot}
                 getStatusColor={getStatusColor}
-              />
-            </TabsContent>
-
-            <TabsContent value="admin">
-              <AdminTab 
-                users={users} 
-                getStatusColor={getStatusColor} 
               />
             </TabsContent>
           </Tabs>
